@@ -1,20 +1,17 @@
 import express from "express";
+import dotenv from "dotenv";
+import { connectDB } from "./config/db.js";
+import userRoutes from "./router/userRoutes.js";
+dotenv.config();
+connectDB();
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 8000;
 
-app.get("/notes", (req, res) => {
-  res.status(200).send(`This is the GET ROUTE`);
-});
-app.post("/notes/", (req, res) => {
-  res.status(200).send(`This is the POST ROUTE`);
-});
-app.put("/notes/:id", (req, res) => {
-  res.status(200).send(`This is the UPDATE ROUTE`);
-});
-app.delete("/notes/:id", (req, res) => {
-  res.status(200).send(`This is the DELETE ROUTE`);
-});
+app.use(express.json());
+
+app.use("/api/user", userRoutes);
+
 app.listen(PORT, () => {
   console.log(`Server is running at port: ${PORT}`);
 });
