@@ -1,2 +1,2 @@
 # trace_app
-Note taking app using MERN STACK
+MERN stack personal notes app with diary mode, image gallery, and selective sharing.
