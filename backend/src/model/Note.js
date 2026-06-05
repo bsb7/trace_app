@@ -3,17 +3,22 @@ import mongoose from "mongoose";
 const noteSchema = new mongoose.Schema(
   {
     title: {
-      type: string,
-      required: true,
+      type: String,
+      required: [true, "Title is required"],
+      trim: true,
+      minlength: [4, "Title must be at least 4 characters long"],
+      maxlength: [120, "Title cannot exceed 120 characters long"],
     },
     content: {
-      type: string,
-      required: true,
+      type: String,
+      required: [true, "Content is required"],
+      minlength: [10, "Content must be at least 10 characters long"],
+      maxlength: [500, "Content cannot exceed 500 characters long"],
     },
     user: {
-      type: Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
+      required: [true, "Note must belong to a valid user account"],
     },
   },
   { timestamps: true },
