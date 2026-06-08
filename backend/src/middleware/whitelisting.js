@@ -1,29 +1,41 @@
-export const whitelist = (data) => (req, res, next) => {
-  const cleanData = {};
-  const emptyOrMissingFields = [];
-  data.forEach((val) => {
-    const value = req.body[val];
-    if (value !== undefined && value !== null) {
-      if (typeof value == "string" && value.trim() == "") {
-        emptyOrMissingFields.push(val);
-      } else {
-        cleanData[val] = typeof value === "string" ? value.trim() : value;
-      }
-    } else {
-      emptyOrMissingFields.push(val);
-    }
-  });
-  if (emptyOrMissingFields.length > 0) {
-    const label = `${emptyOrMissingFields.length > 1 ? "Fields are" : "Field is"} required`;
+import { sendErrorResponse } from "../utils/errorHandler.js";
 
-    return res.status(400).json({
-      message: `${label} ${emptyOrMissingFields.join(", ")}`,
-    });
+export const whitelist = (allowedData) => (req, res, next) => {
+  const cleanData = Object.create(null);
+  const whitelistingErrors = [];
+
+  allowedData.forEach((data) => {
+    const value = req.body[data];
+    // console.log(data);
+    // console.log(value);
+    if (value === undefined || value === null) {
+      whitelistingErrors.push({ field: data, message: `${data} is required!` });
+      return;
+    }
+
+    if (typeof value !== "string") {
+      whitelistingErrors.push({
+        field: data,
+        message: `${data} should be String!`,
+      });
+      return;
+    }
+
+    const processValue = value.trim();
+    if (processValue === "") {
+      whitelistingErrors.push({
+        field: data,
+        message: `${data} cannot be empty!`,
+      });
+      return;
+    }
+
+    cleanData[data] = processValue;
+  });
+
+  if (whitelistingErrors.length > 0) {
+    return sendErrorResponse(res, whitelistingErrors, 400);
   }
-  //   console.log("cleanData");
-  //   console.log(cleanData);
-  //   console.log("missing data");
-  //   console.log(emptyOrMissingFields);
 
   req.body = cleanData;
   next();

@@ -5,7 +5,7 @@ export const validateLength = (requirements) => (req, res, next) => {
   Object.keys(requirements).forEach((field) => {
     const value = req.body[field];
     const limits = requirements[field];
-    console.log(req.body);
+    // console.log(req.body);
     if (value) {
       if (limits.min && value.length < limits.min) {
         lengthErrors.push(`${field} must be at least ${limits.min} characters`);
