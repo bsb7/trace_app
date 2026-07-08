@@ -1,46 +1,38 @@
-import mongoose, { mongo } from "mongoose";
-import { env } from "./environment.js";
-// export const connectDB = async () => {
-//   try {
-//     const connect = await mongoose.connect(process.env.MONGO_URI);
-//     console.log(`✅ Connected to DB: ${connect.connection.host}`);
-//     // console.log(`Connected to DB`);
-//   } catch (error) {
-//     console.error(`❌ Connection Error: ${error.message}`);
-//     process.exit(1);
-//   }
-// };
+import mongoose from "mongoose";
 
 export const connectDB = async () => {
-  const mongooseOptions = {
-    autoIndex: true,
-    maxPoolSize: 10,
-    serverSelectionTimeoutMS: 5000,
-  };
-
-  // Hook active state monitoring
+  // 1. Configure active event-driven listeners on the connection lifecycle
   mongoose.connection.on("connected", () => {
-    console.log(
-      `✅ Database Status: Connected to host [${mongoose.connection.host}]`,
-    );
+    console.log("ℹ️ MongoDB Lifecycle: Connection established successfully.");
   });
 
   mongoose.connection.on("error", (err) => {
-    console.error(`🔥 Database Status: Runtime Error -> ${err.message}`);
+    console.error(
+      `⚠️ MongoDB Lifecycle: Runtime database engine friction: ${err.message}`,
+    );
   });
 
   mongoose.connection.on("disconnected", () => {
     console.warn(
-      "⚠️ Database Status: Connection lost! Attempting background auto-recovery...",
+      "⚠️ MongoDB Lifecycle: Connection dropped. Triggering automatic background retry loops...",
     );
   });
 
-  // execute connection attemp using our centralized variables
+  // 2. Execute the initial boot connection attempt
   try {
-    await mongoose.connect(env.mongoUri, mongooseOptions);
+    const conn = await mongoose.connect(process.env.MONGO_URI, {
+      maxPoolSize: 10, // Limits total concurrent database sockets
+      serverSelectionTimeoutMS: 5000, // Fails fast if the database cluster is completely offline
+    });
+
+    console.log(
+      `✅ Database Engine Ignited: Hosted at ${conn.connection.host}`,
+    );
   } catch (error) {
-    console.error(`❌ Database Status: Critical initial connection failure!`);
-    console.error(error.message);
-    process.exit(1); // Fail-fast: Stop the app if it can't talk to the DB on initial boot
+    // CRITICAL: We only crash the server if the INITIAL boot connection fails.
+    console.error(
+      `❌ Critical Boot Error: Initial database connection refused: ${error.message}`,
+    );
+    process.exit(1);
   }
 };
