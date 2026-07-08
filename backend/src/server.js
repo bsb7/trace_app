@@ -3,7 +3,7 @@ import { env } from "./config/environment.js"; // validates the load safely
 import { connectDB } from "./config/db.js";
 import userRoutes from "./router/userRoutes.js";
 
-connectDB();
+await connectDB();
 
 const app = express();
 
