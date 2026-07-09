@@ -1,4 +1,6 @@
 export const initValidationErrorBucket = (req, res, next) => {
-  req.middlewareError = [];
+  if (!req.middlewareErrors) {
+    req.middlewareErrors = [];
+  }
   next();
 };

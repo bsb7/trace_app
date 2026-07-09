@@ -6,23 +6,29 @@ import {
   updateUser,
   deleteUser,
 } from "../controllers/userController.js";
-// import { whitelist } from "../middleware/whitelisting.js";
-// import { validateLength } from "../middleware/validationLenght.js";
-// import { initValidationErrorBucket } from "../middleware/initValidationErrorBucket.js";
-import { checkForErrors } from "../utils/errorHandler.js";
-// import { dataTransformLowerCase } from "../middleware/dataTransformLowerCase.js";
+import { initValidationErrorBucket } from "../middleware/initializer/initValidationErrorBucket.js";
+import { whitelisting } from "../middleware/validation/whitelisting.js";
+import { checkErrors } from "../middleware/errorHandler/checkErrors.js";
+import { dataTransform } from "../utils/transform/dataTransform.js";
+import { validateEmail } from "../middleware/validation/validateEmail.js";
+import { validateLength } from "../middleware/validation/validateLengjt.js";
+import { validateUserName } from "../middleware/validation/validateUsername.js";
+import { validatePassword } from "../middleware/validation/validatePassword.js";
 const router = express.Router();
 
 router.post(
   "/",
-  // initValidationErrorBucket,
-  // whitelist(["username", "email", "password"]),
-  // dataTransformLowerCase(["email"]),
-  // validateLength({
-  //   username: { min: 6, max: 15 },
-  //   password: { min: 8 },
-  // }),
-  // checkForErrors,
+  initValidationErrorBucket,
+  whitelisting(["username", "email", "password"]),
+  dataTransform({ email: "lowercase" }),
+  validateLength({
+    username: { min: 8, max: 15 },
+    password: { min: 8, max: 15 },
+  }),
+  validateEmail,
+  validateUserName,
+  validatePassword,
+  checkErrors,
   createUser,
 );
 router.get("/", getAllUsers);
