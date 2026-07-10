@@ -1,21 +1,28 @@
 import dotenv from "dotenv";
-// Load the environment variable
-dotenv.config();
 
-const requiredVariables = ["MONGO_URI"];
-// check if critical variable is explicitely present
-requiredVariables.forEach((variable) => {
-  if (!process.env[variable]) {
-    console.error(
-      `❌ CRITICAL CONFIGURATION ERROR: Missing env variable [${variable}]`,
-    );
-    console.error(`The application is shutting down to prevent instability.`);
-    process.exit(1); //force terminate the process emidiately
+// add dotenv.config() - to read .env file
+dotenv.config();
+// initialize required variables
+const requiredVariables = ["MONGO_URI", "PORT"];
+//initialize error accumulator
+const missingVariables = [];
+
+// look into error accumulator if there is an error or not
+requiredVariables.forEach((val) => {
+  if (!process.env[val]) {
+    missingVariables.push(val);
   }
 });
+//fail fast check if there is an error
+if (missingVariables.length > 0) {
+  console.log(
+    `❌ Critical Error: Environmental ${missingVariables.length > 1 ? "Variables" : "Variable"} ${missingVariables.join(", ")} are missing`,
+  );
+  process.exit(1);
+}
+//export variables
 
 export const env = {
   port: process.env.PORT,
-  mongoUri: process.env.MONGO_URI,
-  nodeEnv: process.env.NODE_ENV || "development",
+  mongo_uri: process.env.MONGO_URI,
 };
