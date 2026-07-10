@@ -23,22 +23,18 @@ export const createUser = async (req, res, next) => {
     next(error);
   }
 };
-
 export const getAllUsers = async (req, res) => {
   try {
   } catch (error) {}
 };
-
 export const getUser = async (req, res) => {
   try {
   } catch (error) {}
 };
-
 export const updateUser = async (req, res) => {
   try {
   } catch (error) {}
 };
-
 export const deleteUser = async (req, res) => {
   try {
   } catch (error) {}
