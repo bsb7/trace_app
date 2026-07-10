@@ -1,36 +1,40 @@
 import User from "../model/User.js";
 
-export const createUser = async (req, res) => {
-  console.log("hitting post");
-  // query the db to find all user instances
+export const createUser = async (req, res, next) => {
   try {
-    const users = await User.find({});
-    // happe path: send structured predictable production grade response
-    res.status(200).json({
+    const user = await User.create(req.body);
+    res.status(201).json({
       success: true,
-      results: users.length,
-      data: users,
+      data: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+      },
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    // 🔥 Handle known Mongo errors natively
+    if (error.code === 11000) {
+      const field = Object.keys(error.keyValue)[0];
+      const err = new Error(`${field} already exists`);
+      err.statusCode = 400;
+      return next(err);
+    }
+    // 🔥 Unknown errors → global handler
+    next(error);
   }
 };
-
 export const getAllUsers = async (req, res) => {
   try {
   } catch (error) {}
 };
-
 export const getUser = async (req, res) => {
   try {
   } catch (error) {}
 };
-
 export const updateUser = async (req, res) => {
   try {
   } catch (error) {}
 };
-
 export const deleteUser = async (req, res) => {
   try {
   } catch (error) {}
