@@ -7,4 +7,5 @@ export const checkErrors = (req, res, next) => {
       errors: errors,
     });
   }
+  next();
 };

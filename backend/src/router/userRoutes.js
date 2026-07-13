@@ -14,6 +14,8 @@ import { validateEmail } from "../middleware/validation/validateEmail.js";
 import { validateLength } from "../middleware/validation/validateLengjt.js";
 import { validateUserName } from "../middleware/validation/validateUsername.js";
 import { validatePassword } from "../middleware/validation/validatePassword.js";
+import { pagination } from "../middleware/request/pagination.js";
+import { validateObjId } from "../middleware/validation/validateObjId.js";
 const router = express.Router();
 
 router.post(
@@ -31,9 +33,36 @@ router.post(
   checkErrors,
   createUser,
 );
-router.get("/", getAllUsers);
-router.get("/:id", getUser);
-router.put("/:id", updateUser);
-router.delete("/:id", deleteUser);
+router.get("/", pagination, getAllUsers);
+router.get(
+  "/:id",
+  initValidationErrorBucket,
+  validateObjId,
+  checkErrors,
+  getUser,
+);
+router.patch(
+  "/:id",
+  initValidationErrorBucket,
+  validateObjId,
+  whitelisting(["username", "email", "password"]),
+  dataTransform({ email: "lowercase" }),
+  validateLength({
+    username: { min: 8, max: 15 },
+    password: { min: 8, max: 15 },
+  }),
+  validateEmail,
+  validateUserName,
+  validatePassword,
+  checkErrors,
+  updateUser,
+);
+router.delete(
+  "/:id",
+  initValidationErrorBucket,
+  validateObjId,
+  checkErrors,
+  deleteUser,
+);
 
 export default router;
