@@ -1,8 +1,15 @@
 import User from "../model/User.js";
+import {
+  createUserService,
+  deleteUserService,
+  getAllUsersService,
+  getUserService,
+  updateUserService,
+} from "../services/userService.js";
 
 export const createUser = async (req, res, next) => {
   try {
-    const user = await User.create(req.body);
+    const user = await createUserService(req.body);
     res.status(201).json({
       success: true,
       data: {
@@ -26,13 +33,7 @@ export const createUser = async (req, res, next) => {
 export const getAllUsers = async (req, res, next) => {
   try {
     const { page, limit, skip } = req.pagination;
-
-    const users = await User.find()
-      .select("username email createAt")
-      .skip()
-      .limit()
-      .lean();
-
+    const users = await getAllUsersService({ skip, limit });
     res.status(200).json({
       success: true,
       page,
@@ -48,9 +49,7 @@ export const getAllUsers = async (req, res, next) => {
 export const getUser = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const user = await User.findById(id)
-      .select("username email createdAt")
-      .lean();
+    const user = await getUserService(id);
     if (!user) {
       const err = new Error(`User not found`);
       err.statusCode = 404;
@@ -67,12 +66,7 @@ export const getUser = async (req, res, next) => {
 export const updateUser = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const updatedUser = await User.findByIdAndUpdate(id, req.body, {
-      new: true,
-      runValidators: true,
-    })
-      .select("username email createdAt")
-      .lean();
+    const updatedUser = await updateUserService(id, req.body);
     if (!updatedUser) {
       const err = new Error(`User not found`);
       err.statusCode = 404;
@@ -91,7 +85,7 @@ export const deleteUser = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    const deletedUser = await User.findByIdAndDelete(id);
+    const deletedUser = await deleteUserService(id);
 
     if (!deletedUser) {
       const err = new Error("User not found");
