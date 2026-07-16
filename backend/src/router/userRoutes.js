@@ -21,7 +21,9 @@ const router = express.Router();
 router.post(
   "/",
   initValidationErrorBucket,
-  whitelisting(["username", "email", "password"]),
+  whitelisting({
+    required: ["username", "email", "password"],
+  }),
   dataTransform({ email: "lowercase" }),
   validateLength({
     username: { min: 8, max: 15 },

@@ -1,6 +1,6 @@
 import User from "../model/User.js";
 
-export const getAllUsersService = async ({ skip, limit }) => {
+export const getAllUsersService = ({ skip, limit }) => {
   return User.find()
     .select(`username email createdAt`)
     .skip(skip)
@@ -8,11 +8,11 @@ export const getAllUsersService = async ({ skip, limit }) => {
     .lean();
 };
 
-export const getUserService = async (id) => {
+export const getUserService = (id) => {
   return User.findById(id).select("username email createdAt").lean();
 };
 
-export const createUserService = async (userData) => {
+export const createUserService = (userData) => {
   return User.create(userData);
 };
 

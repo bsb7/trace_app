@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-
 export const connectDB = async () => {
   // 1. Configure active event-driven listeners on the connection lifecycle
   mongoose.connection.on("connected", () => {

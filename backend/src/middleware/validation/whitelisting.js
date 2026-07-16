@@ -1,27 +1,41 @@
 import { trimString } from "../../utils/transform/trimString.js";
-export const whitelisting = (fields) => (req, res, next) => {
-  const cleanData = {};
+export const whitelisting =
+  ({ required = [], optional = [] }) =>
+  (req, res, next) => {
+    const cleanData = {};
+    const allowedFields = [...required, ...optional];
+    Object.keys(req.body).forEach((field) => {
+      if (!allowedFields.includes(field)) {
+        req.middlewareErrors.push({
+          field,
+          message: `${field} is not allowed`,
+          statusCode: 400,
+        });
+      }
+    });
 
-  Object.keys(req.body).forEach((field) => {
-    if (!fields.includes(field)) {
-      req.middlewareErrors.push({
-        field,
-        message: `${field} is not allowed`,
-      });
-    }
-  });
-  fields.forEach((field) => {
-    const val = trimString(req.body[field]);
-    if (val == undefined || val == null || val == "") {
-      req.middlewareErrors.push({
-        field,
-        message: `${field} is required`,
-      });
-    } else {
-      cleanData[field] = val;
-    }
-  });
+    required.forEach((field) => {
+      const value = req.body[field];
 
-  req.body = cleanData;
-  next();
-};
+      if (value === undefined || value === null || value === "") {
+        req.middlewareErrors.push({
+          field,
+          message: `${field} is required`,
+          statusCode: 400,
+        });
+      } else {
+        cleanData[field] = value;
+      }
+    });
+
+    optional.forEach((field) => {
+      const value = req.body[field];
+
+      if (value !== undefined) {
+        cleanData[field] = value;
+      }
+    });
+
+    req.body = cleanData;
+    next();
+  };

@@ -23,7 +23,7 @@ export const createUser = async (req, res, next) => {
     if (error.code === 11000) {
       const field = Object.keys(error.keyValue)[0];
       const err = new Error(`${field} already exists`);
-      err.statusCode = 400;
+      err.statusCode = 409;
       return next(err);
     }
     // 🔥 Unknown errors → global handler
