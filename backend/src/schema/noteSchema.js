@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
-import mnongoose from "mongoose";
-import { optional, z } from "zod";
+import { z } from "zod";
 
 const titleSchema = z
   .string({ error: "Title must be string" })
@@ -15,7 +14,7 @@ const contentSchema = z
   .max(5000, "Content cannot exceed 5000 characters long");
 
 const typeSchema = z
-  .enum(["notes", "diary"], {
+  .enum(["note", "diary"], {
     error: "Type must be either 'Note' or 'Diary'",
   })
   .default("note");
@@ -27,25 +26,25 @@ const isPrivateSchema = z
 const noteIdSchema = z
   .string({ error: "Note Id is Invalid" })
   .refine((id) => mongoose.Types.ObjectId.isValid(id), {
-    error: "Note Id is Invalid",
+    message: "Note Id is Invalid",
   });
 
 const userIdSchema = z
   .string({ error: "User Id is Invalid" })
   .refine((id) => mongoose.Types.ObjectId.isValid(id), {
-    error: "User Id is Invalid",
+    message: "User Id is Invalid",
   });
 
 const pageSchema = z.coerce
-  .number("Page should be number")
-  .int()
+  .number({ error: "Page must be a number" })
+  .int("Page must be an integer")
   .min(1, "Page must be at least 1")
   .default(1);
 
 const limitSchema = z.coerce
-  .number("Limit must be number")
+  .number({ error: "Limit must be a number" })
   .int()
-  .min(10, "Limit must be at least 10")
+  .min(1, "Limit must be at least 1")
   .max(100, "Limit must not exceed 100")
   .default(10);
 
@@ -84,11 +83,11 @@ export const updateNoteSchema = z.object({
       content: contentSchema.optional(),
       type: typeSchema.optional(),
       isPrivate: isPrivateSchema.optional(),
-      user: userIdSchema,
+      user: userIdSchema.optional(),
     })
     .strict()
-    .refine((body) => Object.keys.length > 0, {
-      error: "Provide at least one field to update",
+    .refine((body) => Object.keys(body).length > 0, {
+      message: "Provide at least one field to update",
     }),
 });
 
