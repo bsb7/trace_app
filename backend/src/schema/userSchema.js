@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 import { z } from "zod";
-
 const usernameSchema = z
   .string({
     error: "Username should be a string",
@@ -12,11 +11,9 @@ const usernameSchema = z
     /^[a-zA-Z0-9_]+$/,
     "Username may only contain letters, numbers and underscores",
   );
-
 const emailSchema = z.string().trim().toLowerCase().email({
   error: "Not valid Email",
 });
-
 const passwordSchema = z
   .string()
   .trim()
@@ -26,20 +23,17 @@ const passwordSchema = z
   .regex(/[A-Z]/, "Password must contain an uppercase letter")
   .regex(/\d/, "Password must contain a number")
   .regex(/[@$!%*?&]/, "Password must contain a special character");
-
 const pageSchema = z.coerce
   .number()
   .int()
   .min(1, "Page must be at least 1")
   .default(1);
-
 const limitSchema = z.coerce
   .number()
   .int()
   .min(1, "Page must be at least 1")
   .max(100, "Limit cannot exceed 100")
   .default(10);
-
 const idSchema = z
   .string()
   .refine((id) => mongoose.Types.ObjectId.isValid(id), {
