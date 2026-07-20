@@ -6,48 +6,21 @@ import {
   getNote,
   updateNote,
 } from "../controllers/noteController.js";
-import { initValidationErrorBucket } from "../middleware/initializer/initValidationErrorBucket.js";
-import { whitelisting } from "../middleware/validation/whitelisting.js";
-import { checkErrors } from "../middleware/errorHandler/checkErrors.js";
 import { pagination } from "../middleware/request/pagination.js";
-import { validateObjId } from "../middleware/validation/validateObjId.js";
+import { validateSchema } from "../middleware/validation/validateSchema.js";
+import {
+  createNoteSchema,
+  deleteNoteSchema,
+  getAllNotesSchema,
+  getNoteSchema,
+  updateNoteSchema,
+} from "../schema/noteSchema.js";
 const router = express.Router();
 
-router.post(
-  "/",
-  initValidationErrorBucket,
-  whitelisting({
-    required: ["user", "title", "content"],
-    optional: ["type", "isPrivate"],
-  }),
-  checkErrors,
-  createNote,
-);
-router.get("/", pagination, getAllNotes);
-router.get(
-  "/:id",
-  initValidationErrorBucket,
-  validateObjId,
-  checkErrors,
-  getNote,
-);
-router.patch(
-  "/:id",
-  initValidationErrorBucket,
-  validateObjId,
-  whitelisting({
-    required: ["user", "title", "content"],
-    optional: ["type", "isPrivate"],
-  }),
-  checkErrors,
-  updateNote,
-);
-router.delete(
-  "/:id",
-  initValidationErrorBucket,
-  validateObjId,
-  checkErrors,
-  deleteNote,
-);
+router.post("/", validateSchema(createNoteSchema), createNote);
+router.get("/", validateSchema(getAllNotesSchema), pagination, getAllNotes);
+router.get("/:id", validateSchema(getNoteSchema), getNote);
+router.patch("/:id", validateSchema(updateNoteSchema), updateNote);
+router.delete("/:id", validateSchema(deleteNoteSchema), deleteNote);
 
 export default router;

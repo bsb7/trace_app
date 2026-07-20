@@ -9,7 +9,7 @@ import {
 
 export const createUser = async (req, res, next) => {
   try {
-    const user = await createUserService(req.body);
+    const user = await createUserService(req.validatedData.body);
     res.status(201).json({
       success: true,
       data: {
@@ -48,7 +48,7 @@ export const getAllUsers = async (req, res, next) => {
 
 export const getUser = async (req, res, next) => {
   try {
-    const { id } = req.params;
+    const { id } = req.validatedData.params;
     const user = await getUserService(id);
     if (!user) {
       const err = new Error(`User not found`);
@@ -65,7 +65,7 @@ export const getUser = async (req, res, next) => {
 };
 export const updateUser = async (req, res, next) => {
   try {
-    const { id } = req.params;
+    const { id } = req.validatedData.params;
     const updatedUser = await updateUserService(id, req.body);
     if (!updatedUser) {
       const err = new Error(`User not found`);
@@ -83,7 +83,7 @@ export const updateUser = async (req, res, next) => {
 
 export const deleteUser = async (req, res, next) => {
   try {
-    const { id } = req.params;
+    const { id } = req.validatedData.params;
 
     const deletedUser = await deleteUserService(id);
 
