@@ -7,7 +7,6 @@ import {
   deleteUser,
 } from "../controllers/userController.js";
 import { pagination } from "../middleware/request/pagination.js";
-import { validateObjId } from "../middleware/validation/validateObjId.js";
 import { validateSchema } from "../middleware/validation/validateSchema.js";
 import {
   createUserSchema,
